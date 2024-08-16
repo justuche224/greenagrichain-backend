@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="login">
+      <div id="result"></div>
+      <div><button>login</button></div>
+    </div>
+    <div class="login-input">
+      <input id="name" type="text" />
+      <input id="password" type="password" />
+      <button id="submit">submit</button>
+      <script>
+        document.querySelector("#name").addEventListener("input", (e) => {
+          console.log(e.target.value);
+        });
+        document.querySelector("#password").addEventListener("input", (e) => {
+          console.log(e.target.value);
+        });
+        //submit
+        document.querySelector("#submit").addEventListener("click", () => {
+          fetch("http://localhost:3000/api/user", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: document.querySelector("#name").value,
+              password: document.querySelector("#password").value,
+            }),
+          })
+            .then((res) => res.json())
+            .then((res) => {
+              console.log(res);
+              document.querySelector("#result").innerHTML = JSON.stringify(res);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        });
+      </script>
+    </div>
+    <script>
+      //localhost:3000/api/user
+      document.querySelector("button").addEventListener("click", () => {
+        fetch("http://localhost:3000/api/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: "John",
+            password: "1fyjdyjc234",
+          }),
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            console.log(res);
+            document.querySelector("#result").innerHTML = JSON.stringify(res);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      });
+    </script>
+  </body>
+</html>
