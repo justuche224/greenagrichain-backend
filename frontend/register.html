@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+      input {
+        margin-bottom: 10px;
+        padding: 5px;
+      }
+      button {
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      #message {
+        margin-top: 20px;
+        padding: 10px;
+        border-radius: 5px;
+      }
+      .error {
+        background-color: #ffcccc;
+        color: #cc0000;
+      }
+      .success {
+        background-color: #ccffcc;
+        color: #006600;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Register Test</h1>
+    <form id="registerForm">
+      <input type="text" id="firstname" placeholder="First Name" required />
+      <input type="text" id="lastname" placeholder="Last Name" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="tel" id="number" placeholder="Phone Number" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <input
+        type="password"
+        id="confirmPassword"
+        placeholder="Confirm Password"
+        required
+      />
+      <button type="submit">Register</button>
+    </form>
+    <div id="message"></div>
+
+    <script>
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const messageDiv = document.getElementById("message");
+          messageDiv.innerHTML = "";
+          messageDiv.className = "";
+
+          const formData = {
+            firstname: document.getElementById("firstname").value,
+            lastname: document.getElementById("lastname").value,
+            email: document.getElementById("email").value,
+            number: document.getElementById("number").value,
+            password: document.getElementById("password").value,
+            confirmPassword: document.getElementById("confirmPassword").value,
+          };
+
+          try {
+            const response = await fetch(
+              "http://localhost:3000/api/auth/register",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+              }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+              throw new Error(data.message || "Registration failed");
+            }
+
+            messageDiv.textContent = data;
+            messageDiv.className = "success";
+            document.getElementById("registerForm").reset();
+          } catch (error) {
+            messageDiv.textContent = error.message;
+            messageDiv.className = "error";
+
+            if (error.errors) {
+              error.errors.forEach((err) => {
+                const errorP = document.createElement("p");
+                errorP.textContent = `${err.field}: ${err.message}`;
+                messageDiv.appendChild(errorP);
+              });
+            }
+          }
+        });
+    </script>
+  </body>
+</html>
