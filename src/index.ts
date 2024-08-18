@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import * as z from "zod";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcryptjs";
-import { User } from "@prisma/client";
+import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import nodemailer from "nodemailer";
 
@@ -104,35 +104,6 @@ const sendVerificationEmail = async (email: string, token: string) => {
               <meta http-equiv="X-UA-Compatible" content="IE=edge">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
               <title>Verify your Greenagrichain account</title>
-              <style>
-                  body {
-                      font-family: Arial, sans-serif;
-                      background-color: #f5f5f5;
-                      margin: 0;
-                      padding: 0;
-                  }
-                  .container {
-                      max-width: 600px;
-                      margin: 20px auto;
-                      padding: 20px;
-                      background-color: #fff;
-                      border-radius: 5px;
-                      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                  }
-                  h1, h3 {
-                      color: #333;
-                  }
-                  p {
-                      color: #555;
-                  }
-                  a {
-                      color: #007bff;
-                      text-decoration: none;
-                  }
-                  a:hover {
-                      text-decoration: underline;
-                  }
-              </style>
           </head>
           <body>
               <div class="container">
@@ -172,6 +143,32 @@ const RegisterSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters" }),
 });
 
+const blacklistedTokens: Set<string> = new Set();
+
+const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+  const token = req.headers["authorization"]?.split(" ")[1];
+
+  if (!token || blacklistedTokens.has(token)) {
+    return res
+      .status(401)
+      .json({ message: "Access denied, token missing or invalid" });
+  }
+
+  jwt.verify(token, process.env.AUTH_SECRET!, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: "Invalid or expired token" });
+    }
+
+    if (typeof decoded === "object" && "userId" in decoded) {
+      req.userId = decoded.userId; // Store user ID in request object
+    } else {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+
+    next();
+  });
+};
+
 dotenv.config();
 
 const app = express();
@@ -180,143 +177,145 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 
-// Use an async IIFE to set up the auth middleware
-(async () => {
-  const { ExpressAuth } = await import("@auth/express");
-  const Credentials = (await import("@auth/express/providers/credentials"))
-    .default;
+// Home route
+app.get("/", async (req: Request, res: Response) => {
+  res.json({ message: "Hi From Greenagrichain!" });
+});
 
-  app.use(
-    "/auth/*",
-    ExpressAuth({
-      providers: [
-        Credentials({
-          credentials: {
-            email: { label: "Email", type: "email" },
-            password: { label: "Password", type: "password" },
-          },
-          authorize: async (
-            credentials
-          ): Promise<Omit<User, "password"> | null> => {
-            let user = null;
+app.get("/api/protected", authenticateToken, (req, res) => {
+  res.status(200).json({ message: "You have access to this protected route!" });
+});
 
-            const validatedFields = LoginSchema.safeParse(credentials);
+// Register route
+app.post("/api/auth/register", async (req, res) => {
+  try {
+    const validatedData = RegisterSchema.parse(req.body);
 
-            if (!validatedFields.success) {
-              return null;
-            }
+    const { firstname, lastname, email, number, password, confirmPassword } =
+      validatedData;
 
-            const { email, password } = validatedFields.data;
+    const existingUser = await getUserByEmail(email);
 
-            user = await getUserByEmail(email);
-
-            if (!user) {
-              throw new Error("User not found.");
-            }
-
-            if (!user.emailVerified) {
-              const verificationToken = await generateVerificationToken(
-                user.email
-              );
-              await sendVerificationEmail(
-                verificationToken.email,
-                verificationToken.token
-              );
-
-              return null;
-            }
-
-            const passwordsMatch = await bcrypt.compare(
-              password,
-              user.password
-            );
-
-            if (!passwordsMatch) {
-              throw new Error("Incorrect password!");
-            }
-
-            // return user object with the their profile data
-            const { password: _, ...userWithoutPassword } = user;
-            return userWithoutPassword;
-          },
-        }),
-      ],
-    })
-  );
-
-  // Home route
-  app.get("/", async (req: Request, res: Response) => {
-    res.json({ message: "Hi From Greenagrichain!" });
-  });
-
-  // Register route
-  app.post("/api/auth/register", async (req, res) => {
-    try {
-      const validatedData = RegisterSchema.parse(req.body);
-
-      const { firstname, lastname, email, number, password, confirmPassword } =
-        validatedData;
-
-      const existingUser = await getUserByEmail(email);
-
-      if (existingUser) {
-        return res.status(400).json({ message: "User already exists" });
-      }
-
-      if (password !== confirmPassword) {
-        return res.status(400).json({ message: "Passwords do not match" });
-      }
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      await db.user.create({
-        data: {
-          firstname,
-          lastname,
-          number,
-          email,
-          password: hashedPassword,
-        },
-      });
-
-      const verificationToken = await generateVerificationToken(email);
-
-      await sendVerificationEmail(
-        verificationToken.email,
-        verificationToken.token
-      );
-
-      return res
-        .status(201)
-        .json(
-          "Account created successfully, Check your email for verification link"
-        );
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({
-          message: "Validation failed",
-          errors: error.errors.map((err) => ({
-            field: err.path.join("."),
-            message: err.message,
-          })),
-        });
-      }
-      res.status(500).json({ message: "An unexpected error occurred" });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
     }
-  });
 
-  // Handle undefined routes
-  app.use((req: Request, res: Response) => {
-    res.status(404).json({ message: "Route not found" });
-  });
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
 
-  // Error handling middleware
-  app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    console.error(err.stack);
-    res.status(500).json({ message: "An internal server error occurred" });
-  });
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+    await db.user.create({
+      data: {
+        firstname,
+        lastname,
+        number,
+        email,
+        password: hashedPassword,
+      },
+    });
+
+    const verificationToken = await generateVerificationToken(email);
+
+    await sendVerificationEmail(
+      verificationToken.email,
+      verificationToken.token
+    );
+
+    return res
+      .status(201)
+      .json(
+        "Account created successfully, Check your email for verification link"
+      );
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: error.errors.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        })),
+      });
+    }
+    res.status(500).json({ message: "An unexpected error occurred" });
+  }
+});
+
+// Login route
+app.post("/api/auth/login", async (req, res) => {
+  try {
+    const validatedData = LoginSchema.parse(req.body);
+
+    const { email, password } = validatedData;
+
+    const user = await getUserByEmail(email);
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    // if (!user.emailVerified) {
+    //   const verificationToken = await generateVerificationToken(user.email);
+    //   await sendVerificationEmail(
+    //     verificationToken.email,
+    //     verificationToken.token
+    //   );
+
+    //   return res
+    //     .status(200)
+    //     .json({ message: "Check your email for a verification link!" });
+    // }
+
+    const passwordsMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordsMatch) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    const token = jwt.sign({ userId: user.id }, process.env.AUTH_SECRET!, {
+      expiresIn: "1h", // Token expiration time
+    });
+
+    return res.status(200).json({ token, message: "Login successful" });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: error.errors.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        })),
+      });
+    }
+    res.status(500).json({ message: "An unexpected error occurred" });
+  }
+});
+
+app.post("/api/auth/logout", (req: Request, res: Response) => {
+  const token = req.headers["authorization"]?.split(" ")[1];
+  if (token) {
+    blacklistedTokens.add(token);
+  }
+  res.status(200).json({ message: "Logged out successfully" });
+});
+
+// Handle undefined routes
+app.use((req: Request, res: Response) => {
+  res.status(404).json({ message: "Route not found" });
+});
+
+// Error handling middleware
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({
+    message:
+      process.env.NODE_ENV === "production"
+        ? "An internal server error occurred"
+        : err.message,
   });
-})();
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
