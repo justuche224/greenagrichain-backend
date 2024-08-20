@@ -4,7 +4,7 @@ import { getUserByEmail } from "../lib/user.mjs";
 import { db } from "../lib/db.mjs";
 const router = Router();
 
-router.post("/api/auth/verify-email", async (req, res) => {
+router.get("/api/auth/verify-email", async (req, res) => {
   const token = req.query.token;
   if (!token) {
     return res.status(400).json({ message: "Token is required" });
