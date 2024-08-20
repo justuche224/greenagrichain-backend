@@ -1,21 +1,21 @@
 import nodemailer from "nodemailer";
 export const sendVerificationEmail = async (email, token) => {
-    const verifyUrl = `${process.env.CLIENT_URL}/auth/new-verification?token=${token}`;
-    // Create a transporter using SMTP transport
-    const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: process.env.NODEMAILER_EMAIL,
-            pass: process.env.NODEMAILER_APP_PASS,
-        },
-    });
-    // Email data
-    const mailOptions = {
-        from: process.env.NODEMAILER_EMAIL,
-        to: email,
-        subject: "Verify your Chatz account",
-        text: "Please verify your email",
-        html: `
+  const verifyUrl = `${process.env.CLIENT_URL}/auth/new-verification?token=${token}`;
+  // Create a transporter using SMTP transport
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.NODEMAILER_EMAIL,
+      pass: process.env.NODEMAILER_APP_PASS,
+    },
+  });
+  // Email data
+  const mailOptions = {
+    from: process.env.NODEMAILER_EMAIL,
+    to: email,
+    subject: "Verify your Chatz account",
+    text: "Please verify your email",
+    html: `
           <html lang="en">
           <head>
               <meta charset="UTF-8">
@@ -66,26 +66,26 @@ export const sendVerificationEmail = async (email, token) => {
           </body>
           </html>
         `,
-    };
-    await transporter.sendMail(mailOptions);
+  };
+  await transporter.sendMail(mailOptions);
 };
 export const sendPasswordResetEmail = async (email, token) => {
-    const resetUrl = `${process.env.CLIENT_URL}/auth/new-password?token=${token}`;
-    // Create a transporter using SMTP transport
-    const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: process.env.NODEMAILER_EMAIL,
-            pass: process.env.NODEMAILER_APP_PASS,
-        },
-    });
-    // Email data
-    const mailOptions = {
-        from: process.env.NODEMAILER_EMAIL,
-        to: email,
-        subject: "Reset your password",
-        text: "Reset your password",
-        html: `
+  const resetUrl = `https://greenagrichain.com/reset-password?token=${token}`;
+  // Create a transporter using SMTP transport
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.NODEMAILER_EMAIL,
+      pass: process.env.NODEMAILER_APP_PASS,
+    },
+  });
+  // Email data
+  const mailOptions = {
+    from: process.env.NODEMAILER_EMAIL,
+    to: email,
+    subject: "Reset your password",
+    text: "Reset your password",
+    html: `
           <html lang="en">
           <head>
               <meta charset="UTF-8">
@@ -134,6 +134,6 @@ export const sendPasswordResetEmail = async (email, token) => {
           </body>
           </html>
         `,
-    };
-    await transporter.sendMail(mailOptions);
+  };
+  await transporter.sendMail(mailOptions);
 };
