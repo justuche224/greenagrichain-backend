@@ -15,22 +15,22 @@ router.post("/api/auth/login", async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
-    // if (!user.emailVerified) {
-    //   const verificationToken = await generateVerificationToken(user.email);
-    //   await sendVerificationEmail(
-    //     verificationToken.email,
-    //     verificationToken.token
-    //   );
-    //   return res
-    //     .status(200)
-    //     .json({ message: "Check your email for a verification link!" });
-    // }
+    if (!user.emailVerified) {
+      const verificationToken = await generateVerificationToken(user.email);
+      await sendVerificationEmail(
+        verificationToken.email,
+        verificationToken.token
+      );
+      return res
+        .status(200)
+        .json({ message: "Check your email for a verification link!" });
+    }
     const passwordsMatch = await bcrypt.compare(password, user.password);
     if (!passwordsMatch) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
     const token = jwt.sign({ userId: user.id }, process.env.AUTH_SECRET, {
-      expiresIn: "1h", // Token expiration time
+      expiresIn: "7d", // Token expiration time
     });
     return res.status(200).json({ token, message: "Login successful" });
   } catch (error) {

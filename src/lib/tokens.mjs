@@ -1,6 +1,7 @@
 import { getVerificationTokenByEmail } from "./verificationToken.mjs";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "./db.mjs";
+
 export const generateVerificationToken = async (email) => {
   const token = uuidv4();
   const expires = new Date();
@@ -13,4 +14,26 @@ export const generateVerificationToken = async (email) => {
     data: { email, token, expires },
   });
   return verificationToken;
+};
+
+export const generatePasswordResetToken = async (email) => {
+  const token = uuidv4();
+  const expires = new Date();
+  expires.setHours(expires.getHours() + 1); // Add 1 hour
+
+  const existingToken = await getPasswordResetTokenByEmail(email);
+
+  if (existingToken) {
+    await db.passwordResetToken.delete({ where: { id: existingToken.id } });
+  }
+
+  const passwordResetToken = await db.passwordResetToken.create({
+    data: {
+      email,
+      token,
+      expires,
+    },
+  });
+
+  return passwordResetToken;
 };
