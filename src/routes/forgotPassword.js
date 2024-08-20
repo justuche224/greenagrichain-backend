@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { ResetSchema } from "./schemas.mjs";
-import { getUserByEmail } from "./user.mjs";
-import { generatePasswordResetToken } from "./tokens.mjs";
-import { sendPasswordResetEmail } from "./mailer.mjs";
+import { ResetSchema } from "../lib/schemas.mjs";
+import { getUserByEmail } from "../lib/user.mjs";
+import { generatePasswordResetToken } from "../lib/tokens.mjs";
+import { sendPasswordResetEmail } from "../lib/mailer.mjs";
 
 const router = Router();
 router.get("/api/auth/forgot-password", async (req, res) => {
