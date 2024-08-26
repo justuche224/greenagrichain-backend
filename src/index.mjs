@@ -23,19 +23,7 @@ const allowedOrigins = [
   "https://your-other-allowed-origin.com",
 ];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Check if the origin is in the list of allowed origins
-      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-        callback(null, true); // Allow the origin
-      } else {
-        callback(new Error("Not allowed by CORS")); // Deny the origin
-      }
-    },
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(cookieParser());
 
 app.get("/", async (req, res) => {
