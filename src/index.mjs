@@ -16,9 +16,23 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
+
+const allowedOrigins = [
+  "http://127.0.0.1:5500",
+  "http://localhost:3000",
+  "https://your-other-allowed-origin.com",
+];
+
 app.use(
   cors({
-    origin: "http://127.0.0.1:5500",
+    origin: (origin, callback) => {
+      // Check if the origin is in the list of allowed origins
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true); // Allow the origin
+      } else {
+        callback(new Error("Not allowed by CORS")); // Deny the origin
+      }
+    },
     credentials: true,
   })
 );
