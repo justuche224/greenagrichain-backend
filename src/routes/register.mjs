@@ -34,11 +34,9 @@ router.post("/api/auth/register", async (req, res) => {
       verificationToken.email,
       verificationToken.token
     );
-    return res
-      .status(201)
-      .json(
-        "Account created successfully, Check your email for verification link"
-      );
+    return res.status(201).json({
+      message: "Check your email for a verification link!",
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({
