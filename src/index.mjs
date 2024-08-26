@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
 // Routes
 import registerRouter from "./routes/register.mjs";
@@ -15,36 +16,33 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://127.0.0.1:5500",
+    credentials: true,
+  })
+);
+app.use(cookieParser());
 
-// Home route
 app.get("/", async (req, res) => {
   res.json({ message: "Hi From Greenagrichain!" });
 });
 
-// Protected route
 app.use(protectedRouter);
 
-// Register route
 app.use(registerRouter);
 
-// Login route
 app.use(loginRouter);
 
-// Logout route
 app.use(logoutRouter);
 
-// Email verification route
 app.use(emailVerificationRouter);
 
-// Forgot password route
 app.use(forgotPasswordRouter);
 
-// Handle undefined routes
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
-// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({

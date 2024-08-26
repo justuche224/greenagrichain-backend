@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      input {
+        padding: 10px;
+        margin: 5px 0;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      button {
+        padding: 10px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      .message {
+        margin: 10px 0;
+        color: red;
+      }
+      #protected-content {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #f4f4f4;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Login Form</h2>
+
+    <div id="login-section">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button id="loginBtn">Login</button>
+      <div class="message" id="loginMessage"></div>
+    </div>
+
+    <div id="user-info" style="display: none">
+      <h2>User Info</h2>
+      <p id="user-email"></p>
+      <button id="protectedBtn">Access Protected Route</button>
+      <div class="message" id="protectedMessage"></div>
+      <button id="logoutBtn">Logout</button>
+    </div>
+
+    <div id="protected-content">
+      <p>You have successfully accessed the protected route!</p>
+    </div>
+
+    <script>
+      // Helper function to get cookies
+      function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(";").shift();
+      }
+
+      document
+        .getElementById("loginBtn")
+        .addEventListener("click", async () => {
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          try {
+            const response = await fetch(
+              "http://localhost:3000/api/auth/login",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+              }
+            );
+
+            const data = await response.json();
+            if (response.status === 200) {
+              // Store the token and user info
+              localStorage.setItem("token", data.token);
+              localStorage.setItem("user", JSON.stringify(data.user));
+
+              document.getElementById("loginMessage").textContent =
+                "Login successful!";
+              document.getElementById("login-section").style.display = "none";
+              document.getElementById("user-info").style.display = "block";
+              document.getElementById(
+                "user-email"
+              ).textContent = `Logged in as: ${email}`;
+            } else {
+              document.getElementById("loginMessage").textContent =
+                data.message || "Login failed";
+            }
+          } catch (error) {
+            console.error("Error logging in:", error);
+            document.getElementById("loginMessage").textContent =
+              "An error occurred during login";
+          }
+        });
+
+      document
+        .getElementById("protectedBtn")
+        .addEventListener("click", async () => {
+          try {
+            const token = localStorage.getItem("token");
+            console.log(token);
+
+            const response = await fetch(
+              "http://localhost:3000/api/protected",
+              {
+                method: "GET",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+
+            const data = await response.json();
+            if (response.status === 200) {
+              document.getElementById("protectedMessage").textContent = "";
+              document.getElementById("protected-content").style.display =
+                "block";
+            } else {
+              document.getElementById("protectedMessage").textContent =
+                data.message || "Access denied";
+            }
+          } catch (error) {
+            console.error("Error accessing protected route:", error);
+            document.getElementById("protectedMessage").textContent =
+              "An error occurred while accessing the protected route";
+          }
+        });
+
+      // Handle logout
+      document
+        .getElementById("logoutBtn")
+        .addEventListener("click", async () => {
+          try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(
+              "http://localhost:3000/api/auth/logout",
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+            const data = await response.json();
+            console.log(data);
+
+            if (response.status === 200) {
+              // Remove token and user info from localStorage
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+
+              document.getElementById("user-info").style.display = "none";
+              document.getElementById("login-section").style.display = "block";
+              document.getElementById("email").value = "";
+              document.getElementById("password").value = "";
+              document.getElementById("loginMessage").textContent =
+                data.message || "Logged out successfully";
+
+              // Hide protected content if it's visible
+              document.getElementById("protected-content").style.display =
+                "none";
+            }
+          } catch (error) {
+            console.error("Error logging out:", error);
+            document.getElementById("loginMessage").textContent =
+              "An error occurred during logout";
+          }
+        });
+    </script>
+  </body>
+</html>
