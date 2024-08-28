@@ -10,6 +10,8 @@ const router = Router();
 router.post("/api/auth/register", async (req, res) => {
   try {
     const validatedData = RegisterSchema.parse(req.body);
+    // console.log(validatedData);
+
     const { firstname, lastname, email, number, password, confirmPassword } =
       validatedData;
     const existingUser = await getUserByEmail(email);

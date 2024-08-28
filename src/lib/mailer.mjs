@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 export const sendVerificationEmail = async (email, token) => {
   const verifyUrl = `${process.env.CLIENT_URL}/api/auth/verify-email?token=${token}`;
-  console.log(verifyUrl);
+  //   console.log(verifyUrl);
 
   // Create a transporter using SMTP transport
   const transporter = nodemailer.createTransport({
@@ -15,8 +15,7 @@ export const sendVerificationEmail = async (email, token) => {
   const mailOptions = {
     from: process.env.NODEMAILER_EMAIL,
     to: email,
-    subject: "Verify your Chatz account",
-    text: "Please verify your email",
+    subject: "Verify your Greenagrichain account",
     html: `
           <!DOCTYPE html>
 <html lang="en">
@@ -24,7 +23,7 @@ export const sendVerificationEmail = async (email, token) => {
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Verify Your Chatz Account</title>
+    <title>Verify Your Greenagrichain Account</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -60,7 +59,7 @@ export const sendVerificationEmail = async (email, token) => {
   </head>
   <body>
     <div class="container">
-     <h1>Hello ${firstname},</h1>
+     <h1>Hello ${email},</h1>
       <p>
         You've registered an account on Greenagrichain. Before you can start
         using your account, we need to verify that this email address belongs to
@@ -99,6 +98,7 @@ export const sendVerificationEmail = async (email, token) => {
         `,
   };
   await transporter.sendMail(mailOptions);
+  console.log("Email sent successfully to:" + email);
 };
 export const sendPasswordResetEmail = async (email, token) => {
   const resetUrl = `https://greenagrichain.com/reset-password?token=${token}`;
