@@ -10,10 +10,11 @@ import logoutRouter from "./routes/logout.mjs";
 import emailVerificationRouter from "./routes/emailVerification.mjs";
 import protectedRouter from "./routes/protected.mjs";
 import forgotPasswordRouter from "./routes/forgotPassword.js";
+import depositRouter from "./routes/deposit.mjs";
 
 dotenv.config();
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5001;
 
 app.use(express.json());
 
@@ -41,6 +42,8 @@ app.use(logoutRouter);
 app.use(emailVerificationRouter);
 
 app.use(forgotPasswordRouter);
+
+app.use(depositRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });

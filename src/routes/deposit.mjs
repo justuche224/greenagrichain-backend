@@ -11,6 +11,18 @@ router.post("/api/deposit", async (req, res) => {
       return res.status(400).json({ message: "All fields are required." });
     }
 
+    if (amount <= 0) {
+      return res
+        .status(400)
+        .json({ message: "Amount must be greater than 0." });
+    }
+
+    const existingUser = await db.user.findUnique({ where: { id: userId } });
+
+    if (!existingUser) {
+      return res.status(400).json({ message: "Invalid user" });
+    }
+
     const newDeposit = await db.deposit.create({
       data: {
         userId,
@@ -32,18 +44,41 @@ router.post("/api/deposit", async (req, res) => {
   }
 });
 
+// Route to get deposits with optional status filtering
+router.get("/api/deposits", async (req, res) => {
+  const { status } = req.query;
+
+  try {
+    // Build the filtering object conditionally based on the status query
+    const whereClause = status ? { status: status } : {}; // If no status provided, get all deposits
+
+    // Fetch deposits with the optional status filter
+    const deposits = await db.deposit.findMany({
+      where: whereClause,
+      include: {
+        user: true, // Include the user details associated with the deposit
+      },
+    });
+
+    return res.status(200).json({ deposits });
+  } catch (error) {
+    console.error("Error fetching deposits:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 // Route for admin to update the deposit status to verified and update user's balance
 router.put("/api/deposit/:id/status", async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
   const { user } = req.body;
 
-  if (!id || !status) {
-    return res.status(400).json({ message: "All fields are required." });
-  }
-
   if (user.role !== "admin") {
     return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  if (!id || !status) {
+    return res.status(400).json({ message: "All fields are required." });
   }
 
   try {
