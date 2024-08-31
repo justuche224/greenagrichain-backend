@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,16 +12,43 @@ enum UserRole {
   USER
 }
 
+enum KYCStatus {
+  pending
+  approved
+  declined
+}
+
+enum DepositStatus {
+  pending
+  reviewing
+  verified
+}
+
+enum TransactionType {
+  deposit
+  withdrawal
+  purchase
+}
+
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  email         String    @unique
-  firstname     String
-  lastname      String
-  number        String
-  password      String
-  emailVerified DateTime?
-  image         String?
-  role          UserRole  @default(USER)
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  email          String    @unique
+  firstname      String
+  lastname       String
+  number         String
+  password       String
+  emailVerified  DateTime?
+  kycVerified    DateTime?
+  image          String?
+  address        String?
+  nationality    String?
+  identification String?
+  gender         String?
+  role           UserRole  @default(USER)
+
+  deposits       Deposit[]
+  kyc            KYC?
+  accountBalance AccountBalance?
 }
 
 model VerificationToken {
@@ -46,4 +67,46 @@ model PasswordResetToken {
   expires DateTime
 
   @@unique([email, token])
+}
+
+model Deposit {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String        @db.ObjectId
+  walletAddress String
+  amount        Float
+  currency      String
+  status        DepositStatus @default(pending)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  verifiedAt    DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model KYC {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String    @unique @db.ObjectId
+  status     KYCStatus @default(pending)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  approvedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model AccountBalance {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String        @unique @db.ObjectId
+  balance      Float         @default(0.0)
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+}
+
+model Transaction {
+  id        String          @id @default(auto()) @map("_id") @db.ObjectId
+  balanceId String          @db.ObjectId
+  type      TransactionType
+  amount    Float
+  createdAt DateTime        @default(now())
+  balance   AccountBalance  @relation(fields: [balanceId], references: [id])
 }
