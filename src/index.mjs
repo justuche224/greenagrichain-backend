@@ -11,6 +11,7 @@ import emailVerificationRouter from "./routes/emailVerification.mjs";
 import protectedRouter from "./routes/protected.mjs";
 import forgotPasswordRouter from "./routes/forgotPassword.js";
 import depositRouter from "./routes/deposit.mjs";
+import kycRouter from "./routes/kyc.mjs";
 
 dotenv.config();
 const app = express();
@@ -44,6 +45,8 @@ app.use(emailVerificationRouter);
 app.use(forgotPasswordRouter);
 
 app.use(depositRouter);
+
+app.use(kycRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
