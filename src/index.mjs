@@ -14,6 +14,7 @@ import depositRouter from "./routes/deposit.mjs";
 import kycRouter from "./routes/kyc.mjs";
 import walletRouter from "./routes/wallet.mjs";
 import usersRouter from "./routes/users.mjs";
+import accountBalanceRouter from "./routes/accountBalance.mjs";
 
 dotenv.config();
 const app = express();
@@ -22,16 +23,16 @@ const port = process.env.PORT || 5001;
 app.use(express.json());
 
 const allowedOrigins = [
-    "http://127.0.0.1:5500",
-    "http://localhost:3000",
-    "https://greenagrichain.com"
+  "http://127.0.0.1:5500",
+  "http://localhost:3000",
+  "https://greenagrichain.com",
 ];
 
 app.use(cors());
 app.use(cookieParser());
 
 app.get("/", async (req, res) => {
-    res.json({ message: "Hi From Greenagrichain!" });
+  res.json({ message: "Hi From Greenagrichain!" });
 });
 
 app.use(protectedRouter);
@@ -54,18 +55,20 @@ app.use(walletRouter);
 
 app.use(usersRouter);
 
+app.use(accountBalanceRouter);
+
 app.use((req, res) => {
-    res.status(404).json({ message: "Route not found" });
+  res.status(404).json({ message: "Route not found" });
 });
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({
-        message:
-            process.env.NODE_ENV === "production"
-                ? "An internal server error occurred"
-                : err.message
-    });
+  console.error(err.stack);
+  res.status(500).json({
+    message:
+      process.env.NODE_ENV === "production"
+        ? "An internal server error occurred"
+        : err.message,
+  });
 });
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port ${port}`);
 });
