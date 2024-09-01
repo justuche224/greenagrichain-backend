@@ -5,8 +5,6 @@ const router = Router();
 
 //get wallets, with optional filtering by currency
 router.get("/api/wallets", async (req, res) => {
-  // console.log("get wallets called");
-
   const { currency } = req.query;
 
   try {
