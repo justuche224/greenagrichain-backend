@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      html {
+        color-scheme: light dark;
+      }
+    </style>
+  </head>
+  <body>
+    <h3 id="-1-get-wallets-"><strong>1. Get Wallets</strong></h3>
+    <p>
+      <strong>Endpoint:</strong> <code>/api/wallets</code
+      ><strong>Method:</strong> GET
+      <strong>Query Parameters (optional):</strong>
+    </p>
+    <ul>
+      <li>
+        <code>currency</code> (string): Filter wallets by currency (e.g.,
+        &quot;USD&quot;, &quot;EUR&quot;).<strong>Response:</strong>
+      </li>
+      <li>
+        <strong>200 OK:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong> An array of wallet objects if
+            <code>currency</code> is provided, or an array of all wallets
+            otherwise.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>500 Internal Server Error:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Internal server error&quot; }</code>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <h3 id="-2-get-wallet-address-by-currency-">
+      <strong>2. Get Wallet Address by Currency</strong>
+    </h3>
+    <p>
+      <strong>Endpoint:</strong> <code>/api/wallets/:currency</code
+      ><strong>Method:</strong> GET <strong>Path Parameters:</strong>
+    </p>
+    <ul>
+      <li>
+        <code>currency</code> (string): The currency of the wallet to
+        retrieve.<strong>Response:</strong>
+      </li>
+      <li>
+        <strong>200 OK:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong> The wallet object for the specified currency.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>404 Not Found:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code
+              >{ message: &quot;Wallet for ${currency} not found&quot; }</code
+            >
+            (if the wallet for the given currency does not exist)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>500 Internal Server Error:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Internal server error&quot; }</code>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <h3 id="-3-update-wallet-address-">
+      <strong>3. Update Wallet Address</strong>
+    </h3>
+    <p>
+      <strong>Endpoint:</strong> <code>/api/wallets/:currency</code
+      ><strong>Method:</strong> PUT <strong>Path Parameters:</strong>
+    </p>
+    <ul>
+      <li>
+        <code>currency</code> (string): The currency of the wallet to
+        update.<strong>Request Body:</strong>
+      </li>
+      <li>
+        <code>address</code> (string): The new address for the wallet.<strong
+          >Response:</strong
+        >
+      </li>
+      <li>
+        <strong>200 OK:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code
+              >{ message: &quot;Wallet address updated successfully&quot;,
+              wallet: &lt;updatedWalletObject&gt; }</code
+            >
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>400 Bad Request:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Address is required.&quot; }</code> (if
+            <code>address</code> is missing in the request body)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>500 Internal Server Error:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Internal server error&quot; }</code>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <h3 id="-4-add-a-new-wallet-"><strong>4. Add a New Wallet</strong></h3>
+    <p>
+      <strong>Endpoint:</strong> <code>/api/wallets</code
+      ><strong>Method:</strong> POST <strong>Request Body:</strong>
+    </p>
+    <ul>
+      <li><code>currency</code> (string): The currency of the new wallet.</li>
+      <li>
+        <code>address</code> (string): The address for the new wallet.<strong
+          >Response:</strong
+        >
+      </li>
+      <li>
+        <strong>201 Created:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code
+              >{ message: &quot;New wallet added successfully&quot;, wallet:
+              &lt;newWalletObject&gt; }</code
+            >
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>400 Bad Request:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code
+              >{ message: &quot;Currency and address are required.&quot; }</code
+            >
+            (if <code>currency</code> or <code>address</code> is missing in the
+            request body)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>500 Internal Server Error:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Internal server error&quot; }</code>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </body>
+</html>

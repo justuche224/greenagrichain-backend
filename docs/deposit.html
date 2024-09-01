@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      html {
+        color-scheme: light dark;
+      }
+    </style>
+  </head>
+  <body>
+    <h3 id="-1-create-a-deposit-"><strong>1. Create a Deposit</strong></h3>
+    <p>
+      <strong>Endpoint:</strong> <code>/api/deposit</code
+      ><strong>Method:</strong> POST <strong>Request Body:</strong>
+    </p>
+    <ul>
+      <li>
+        <code>userId</code> (number): The ID of the user making the deposit.
+      </li>
+      <li>
+        <code>walletAddress</code> (string): The wallet address from which the
+        deposit was made.
+      </li>
+      <li><code>amount</code> (number): The deposit amount.</li>
+      <li>
+        <code>currency</code> (string): The currency of the deposit (e.g., USD,
+        EUR).<strong>Response:</strong>
+      </li>
+      <li>
+        <strong>201 Created:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code
+              >{ message: &quot;Deposit created successfully. Balance will be
+              updated when the admin verifies it.&quot;, deposit:
+              &lt;newDepositObject&gt; }</code
+            >
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>400 Bad Request:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;All fields are required.&quot; }</code> (if
+            any required field is missing)
+          </li>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Amount must be greater than 0.&quot; }</code>
+            (if <code>amount</code> is not positive)
+          </li>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Invalid user&quot; }</code> (if user with
+            <code>userId</code> is not found)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>500 Internal Server Error:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Internal server error&quot; }</code>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <h3 id="-2-get-deposits-with-optional-filtering-">
+      <strong>2. Get Deposits (with optional filtering)</strong>
+    </h3>
+    <p>
+      <strong>Endpoint:</strong> <code>/api/deposits</code
+      ><strong>Method:</strong> GET
+      <strong>Query Parameters (optional):</strong>
+    </p>
+    <ul>
+      <li>
+        <code>status</code> (string): Filter deposits by status (e.g.,
+        &quot;pending&quot;, &quot;reviewing&quot;, &quot;verified&quot;).
+      </li>
+      <li>
+        <code>userId</code> (number): Filter deposits by user ID.<strong
+          >Response:</strong
+        >
+      </li>
+      <li>
+        <strong>200 OK:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code
+              >{ deposits: [&lt;depositObject1&gt;, &lt;depositObject2&gt;, ...]
+              }</code
+            >
+            (array of deposit objects)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>500 Internal Server Error:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Internal server error&quot; }</code>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <h3 id="-3-update-deposit-status-admin-only-">
+      <strong>3. Update Deposit Status (Admin Only)</strong>
+    </h3>
+    <p>
+      <strong>Endpoint:</strong> <code>/api/deposit/:id/status</code
+      ><strong>Method:</strong> PUT <strong>Path Parameters:</strong>
+    </p>
+    <ul>
+      <li>
+        <code>id</code> (number): The ID of the deposit to update.<strong
+          >Request Body:</strong
+        >
+      </li>
+      <li>
+        <code>status</code> (string): The new status for the deposit
+        (&quot;pending&quot;, &quot;reviewing&quot;, or &quot;verified&quot;).
+      </li>
+      <li>
+        <code>adminId</code> (number): The ID of the admin performing the
+        update.<strong>Response:</strong>
+      </li>
+      <li>
+        <strong>200 OK:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code
+              >{ message: &quot;Deposit status updated successfully&quot;,
+              deposit: &lt;updatedDepositObject&gt; }</code
+            >
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>400 Bad Request:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;All fields are required.&quot; }</code> (if
+            any required field is missing)
+          </li>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Invalid status provided&quot; }</code> (if
+            <code>status</code> is not a valid option)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>403 Forbidden:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Unauthorized&quot; }</code> (if the user
+            performing the update is not an admin)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>404 Not Found:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Deposit not found&quot; }</code> (if the
+            deposit with the given <code>id</code> is not found)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>500 Internal Server Error:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Internal server error&quot; }</code>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <p><strong>Notes:</strong></p>
+    <ul>
+      <li>Only admins can update the status of a deposit.</li>
+      <li>
+        When the deposit status is set to &quot;verified&quot;, the user&#39;s
+        account balance is automatically updated with the deposit amount.
+      </li>
+    </ul>
+  </body>
+</html>

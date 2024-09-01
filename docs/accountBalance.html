@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      html {
+        color-scheme: light dark;
+      }
+    </style>
+  </head>
+  <body>
+    <h3 id="-1-get-all-users-account-balances-">
+      <strong>1. Get All Users&#39; Account Balances</strong>
+    </h3>
+    <p>
+      <strong>Endpoint:</strong> <code>/api/account-balances</code
+      ><strong>Method:</strong> GET <strong>Response:</strong>
+    </p>
+    <ul>
+      <li>
+        <strong>200 OK:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong> An array of account balance objects, each
+            containing:
+            <ul>
+              <li>
+                <code>id</code> (number): The unique ID of the account balance.
+              </li>
+              <li><code>balance</code> (number): The current balance.</li>
+              <li>
+                <code>userId</code> (number): The ID of the user associated with
+                the account balance.
+              </li>
+              <li>
+                <code>user</code>: A nested object containing user details:
+                <ul>
+                  <li>
+                    <code>firstname</code> (string): The user&#39;s first name.
+                  </li>
+                  <li>
+                    <code>lastname</code> (string): The user&#39;s last name.
+                  </li>
+                  <li>
+                    <code>email</code> (string): The user&#39;s email address.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>500 Internal Server Error:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Internal server error&quot; }</code>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <h3 id="-2-get-a-user-s-account-balance-by-user-id-">
+      <strong>2. Get a User&#39;s Account Balance by User ID</strong>
+    </h3>
+    <p>
+      <strong>Endpoint:</strong> <code>/api/account-balance/:userId</code
+      ><strong>Method:</strong> GET <strong>Path Parameters:</strong>
+    </p>
+    <ul>
+      <li>
+        <code>userId</code> (number): The ID of the user whose account balance
+        should be retrieved.<strong>Response:</strong>
+      </li>
+      <li>
+        <strong>200 OK:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong> An account balance object, similar to the
+            response for <code>/api/account-balances</code>.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>404 Not Found:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Account balance not found&quot; }</code>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>500 Internal Server Error:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Internal server error&quot; }</code>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <h3 id="-3-update-a-user-s-account-balance-">
+      <strong>3. Update a User&#39;s Account Balance</strong>
+    </h3>
+    <p>
+      <strong>Endpoint:</strong> <code>/api/account-balance/:userId</code
+      ><strong>Method:</strong> PUT <strong>Path Parameters:</strong>
+    </p>
+    <ul>
+      <li>
+        <code>userId</code> (number): The ID of the user whose account balance
+        should be updated.<strong>Request Body:</strong>
+      </li>
+      <li><code>balance</code> (number): The new balance for the account.</li>
+      <li>
+        <code>adminId</code> (number): The ID of the admin user performing the
+        update.<strong>Response:</strong>
+      </li>
+      <li>
+        <strong>200 OK:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code
+              >{ message: &quot;Account balance updated successfully&quot;,
+              accountBalance: &lt;updatedAccountBalanceObject&gt; }</code
+            >
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>400 Bad Request:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Valid balance is required.&quot; }</code> (if
+            <code>balance</code> is invalid)
+          </li>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Admin ID is required.&quot; }</code> (if
+            <code>adminId</code> is missing)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>403 Forbidden:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Unauthorized&quot; }</code> (if the admin
+            user is not authorized to update balances)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>404 Not Found:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Account balance not found&quot; }</code>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>500 Internal Server Error:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Internal server error&quot; }</code>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <h3 id="-4-increment-a-user-s-account-balance-">
+      <strong>4. Increment a User&#39;s Account Balance</strong>
+    </h3>
+    <p>
+      <strong>Endpoint:</strong>
+      <code>/api/account-balance/:userId/increment</code
+      ><strong>Method:</strong> PUT <strong>Path Parameters:</strong>
+    </p>
+    <ul>
+      <li>
+        <code>userId</code> (number): The ID of the user whose account balance
+        should be incremented.<strong>Request Body:</strong>
+      </li>
+      <li>
+        <code>amount</code> (number): The amount to increment the balance by.
+      </li>
+      <li>
+        <code>adminId</code> (number): The ID of the admin user performing the
+        increment.<strong>Response:</strong>
+      </li>
+      <li>
+        <strong>200 OK:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code
+              >{ message: &quot;Account balance incremented successfully&quot;,
+              accountBalance: &lt;updatedAccountBalanceObject&gt; }</code
+            >
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>400 Bad Request:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code
+              >{ message: &quot;Valid increment amount is required.&quot;
+              }</code
+            >
+            (if <code>amount</code> is invalid)
+          </li>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Admin ID is required.&quot; }</code> (if
+            <code>adminId</code> is missing)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>403 Forbidden:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Unauthorized&quot; }</code> (if the admin
+            user is not authorized to increment balances)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>404 Not Found:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Account balance not found&quot; }</code>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>500 Internal Server Error:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Internal server error&quot; }</code>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </body>
+</html>

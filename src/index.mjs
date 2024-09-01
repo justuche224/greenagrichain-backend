@@ -15,6 +15,7 @@ import kycRouter from "./routes/kyc.mjs";
 import walletRouter from "./routes/wallet.mjs";
 import usersRouter from "./routes/users.mjs";
 import accountBalanceRouter from "./routes/accountBalance.mjs";
+import docsRouter from "./routes/docs.mjs";
 
 dotenv.config();
 const app = express();
@@ -56,6 +57,8 @@ app.use(walletRouter);
 app.use(usersRouter);
 
 app.use(accountBalanceRouter);
+
+app.use("/api/docs", docsRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });

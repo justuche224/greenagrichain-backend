@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      html {
+        color-scheme: light dark;
+      }
+    </style>
+  </head>
+  <body>
+    <h3 id="-1-submit-kyc-information-">
+      <strong>1. Submit KYC Information</strong>
+    </h3>
+    <p>
+      <strong>Endpoint:</strong> <code>/api/kyc</code
+      ><strong>Method:</strong> POST <strong>Request Body:</strong>
+    </p>
+    <ul>
+      <li>
+        <code>userId</code> (number): The ID of the user submitting the KYC
+        information.
+      </li>
+      <li>
+        <code>image</code> (string): The URL or path to the KYC image (e.g.,
+        passport, ID card).
+      </li>
+      <li>
+        <code>address</code> (string): The user&#39;s residential address.
+      </li>
+      <li><code>nationality</code> (string): The user&#39;s nationality.</li>
+      <li>
+        <code>identification</code> (string): The identification document number
+        (e.g., passport number, ID number).
+      </li>
+      <li>
+        <code>gender</code> (string): The user&#39;s gender.<strong
+          >Response:</strong
+        >
+      </li>
+      <li>
+        <strong>201 Created:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code
+              >{ message: &quot;KYC submitted successfully&quot;, kyc:
+              &lt;kycObject&gt;, user: &lt;userObject&gt; }</code
+            >
+            (includes created KYC record and updated user information)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>400 Bad Request:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;All fields are required.&quot; }</code> (if
+            any required field is missing)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>500 Internal Server Error:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Internal server error&quot; }</code>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <h3 id="-2-get-kyc-records-with-optional-filtering-">
+      <strong>2. Get KYC Records (with optional filtering)</strong>
+    </h3>
+    <p>
+      <strong>Endpoint:</strong> <code>/api/kyc</code
+      ><strong>Method:</strong> GET
+      <strong>Query Parameters (optional):</strong>
+    </p>
+    <ul>
+      <li>
+        <code>status</code> (string): Filter KYC records by status
+        (&quot;pending&quot;, &quot;approved&quot;, &quot;declined&quot;).
+      </li>
+      <li>
+        <code>nationality</code> (string): Filter records by user&#39;s
+        nationality.
+      </li>
+      <li>
+        <code>gender</code> (string): Filter records by user&#39;s gender.
+      </li>
+      <li>
+        <code>userId</code> (number): Filter records by specific user ID.<strong
+          >Response:</strong
+        >
+      </li>
+      <li>
+        <strong>200 OK:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code
+              >{ message: &quot;KYC records fetched successfully&quot;, data:
+              [&lt;kycObject1&gt;, &lt;kycObject2&gt;, ...] }</code
+            >
+            (array of KYC records with user details)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>500 Internal Server Error:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Internal server error&quot; }</code>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <h3 id="-3-update-kyc-status-admin-only-">
+      <strong>3. Update KYC Status (Admin Only)</strong>
+    </h3>
+    <p>
+      <strong>Endpoint:</strong> <code>/api/kyc/:id/status</code
+      ><strong>Method:</strong> PUT <strong>Path Parameters:</strong>
+    </p>
+    <ul>
+      <li>
+        <code>id</code> (number): The ID of the KYC record to update.<strong
+          >Request Body:</strong
+        >
+      </li>
+      <li>
+        <code>status</code> (string): The new status for the KYC record
+        (&quot;pending&quot;, &quot;approved&quot;, or
+        &quot;declined&quot;).<strong>Response:</strong>
+      </li>
+      <li>
+        <strong>200 OK:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code
+              >{ message: &quot;KYC status updated successfully&quot;, kyc:
+              &lt;updatedKycObject&gt; }</code
+            >
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>400 Bad Request:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Invalid status provided&quot; }</code> (if
+            <code>status</code> is not a valid option)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>404 Not Found:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;KYC record not found&quot; }</code> (if the
+            KYC record with the given <code>id</code> is not found)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>500 Internal Server Error:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Internal server error&quot; }</code>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <p><strong>Notes:</strong></p>
+    <ul>
+      <li>Only admins can update the status of a KYC record.</li>
+      <li>
+        When the KYC status is set to &quot;approved&quot;, the user&#39;s KYC
+        verification date is updated.
+      </li>
+    </ul>
+  </body>
+</html>
