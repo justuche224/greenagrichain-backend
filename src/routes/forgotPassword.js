@@ -5,7 +5,7 @@ import { generatePasswordResetToken } from "../lib/tokens.mjs";
 import { sendPasswordResetEmail } from "../lib/mailer.mjs";
 
 const router = Router();
-router.get("/api/auth/forgot-password", async (req, res) => {
+router.post("/api/auth/forgot-password", async (req, res) => {
   try {
     const validatedData = ResetSchema.parse(req.body);
 

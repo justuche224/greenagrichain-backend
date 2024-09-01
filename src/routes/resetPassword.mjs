@@ -3,7 +3,7 @@ import { ResetSchema } from "../lib/schemas.mjs";
 import { getUserByEmail } from "../lib/user.mjs";
 
 const router = Router();
-router.get("/api/auth/forgot-password", async (req, res) => {
+router.post("/api/auth/forgot-password", async (req, res) => {
   const { token, values } = req.body;
 
   if (!token) {
