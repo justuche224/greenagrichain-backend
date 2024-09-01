@@ -110,3 +110,11 @@ model Transaction {
   createdAt DateTime        @default(now())
   balance   AccountBalance  @relation(fields: [balanceId], references: [id])
 }
+
+model Wallet {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  currency  String   @unique
+  address   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
