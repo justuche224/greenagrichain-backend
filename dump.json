@@ -1,4 +1,8 @@
 {
-  "amount": 5000,
-  "adminId": "66c1808a04f126184d4b9363"
+  "userId": "66c1808a04f126184d4b9363",
+  "image": "https://i.postimg.cc/QdvcKRrH/Screenshot-from-2024-09-01-17-13-01.png",
+  "address": "381 Saint Marys Avenue Pittsburgh PA 15206 United States",
+  "nationality": "United States",
+  "identification": "123456789",
+  "gender": "Male"
 }

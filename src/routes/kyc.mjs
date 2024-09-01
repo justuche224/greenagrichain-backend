@@ -7,11 +7,15 @@ router.post("/api/kyc", async (req, res) => {
   const { userId, image, address, nationality, identification, gender } =
     req.body;
 
-  const { user } = req.body;
-
-  if (user.role !== "admin") {
-    return res.status(403).json({ message: "Unauthorized" });
-  }
+  console.log(
+    "step 1",
+    userId,
+    image,
+    address,
+    nationality,
+    identification,
+    gender
+  );
 
   try {
     if (
@@ -25,6 +29,8 @@ router.post("/api/kyc", async (req, res) => {
       return res.status(400).json({ message: "All fields are required." });
     }
 
+    console.log("step 2, verified inputes");
+
     const kyc = await db.kyc.upsert({
       where: { userId },
       update: {
@@ -36,6 +42,8 @@ router.post("/api/kyc", async (req, res) => {
       },
     });
 
+    console.log("step 3, kyc created");
+
     const updatedUser = await db.user.update({
       where: { id: userId },
       data: {
@@ -46,6 +54,8 @@ router.post("/api/kyc", async (req, res) => {
         gender,
       },
     });
+
+    console.log("step 4, user updated");
 
     return res.status(201).json({
       message: "KYC submitted successfully",

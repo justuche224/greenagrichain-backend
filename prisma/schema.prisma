@@ -47,7 +47,7 @@ model User {
   role           UserRole  @default(USER)
 
   deposits       Deposit[]
-  kyc            KYC?
+  kyc            kyc?
   accountBalance AccountBalance?
 }
 
@@ -83,7 +83,7 @@ model Deposit {
   user User @relation(fields: [userId], references: [id])
 }
 
-model KYC {
+model kyc {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
   userId     String    @unique @db.ObjectId
   status     KYCStatus @default(pending)
