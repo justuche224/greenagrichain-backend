@@ -13,6 +13,7 @@ import forgotPasswordRouter from "./routes/forgotPassword.js";
 import depositRouter from "./routes/deposit.mjs";
 import kycRouter from "./routes/kyc.mjs";
 import walletRouter from "./routes/wallet.mjs";
+import usersRouter from "./routes/users.mjs";
 
 dotenv.config();
 const app = express();
@@ -50,6 +51,8 @@ app.use(depositRouter);
 app.use(kycRouter);
 
 app.use(walletRouter);
+
+app.use(usersRouter);
 
 app.use((req, res) => {
     res.status(404).json({ message: "Route not found" });
