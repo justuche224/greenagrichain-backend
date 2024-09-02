@@ -66,7 +66,6 @@ router.get("/api/deposits", async (req, res) => {
     if (userId) {
       whereClause.userId = userId;
     }
-    // Fetch deposits with the optional status filter
     const deposits = await db.deposit.findMany({
       where: whereClause,
       include: {
