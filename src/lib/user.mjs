@@ -15,3 +15,21 @@ export const getUserById = async (id) => {
     return null;
   }
 };
+
+export async function updateUserOTP(email, otp, otpExpires) {
+  try {
+    // Update the user's OTP and otpExpires fields
+    const updatedUser = await prisma.user.update({
+      where: { email },
+      data: {
+        otp: otp,
+        otpExpires: otpExpires,
+      },
+    });
+
+    return updatedUser;
+  } catch (error) {
+    console.error("Error updating user OTP: ", error);
+    throw new Error("Failed to update OTP.");
+  }
+}

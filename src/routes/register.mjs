@@ -34,7 +34,8 @@ router.post("/api/auth/register", async (req, res) => {
     const verificationToken = await generateVerificationToken(email);
     await sendVerificationEmail(
       verificationToken.email,
-      verificationToken.token
+      verificationToken.token,
+      firstname
     );
     return res.status(201).json({
       message: "Check your email for a verification link!",

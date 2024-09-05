@@ -16,6 +16,7 @@ import walletRouter from "./routes/wallet.mjs";
 import usersRouter from "./routes/users.mjs";
 import accountBalanceRouter from "./routes/accountBalance.mjs";
 import docsRouter from "./routes/docs.mjs";
+import otpRouter from "./routes/verifyOtp.mjs";
 
 dotenv.config();
 const app = express();
@@ -58,6 +59,8 @@ app.use(usersRouter);
 
 app.use(accountBalanceRouter);
 
+app.use(otpRouter);
+
 app.use("/api/docs", docsRouter);
 
 app.use((req, res) => {
@@ -73,5 +76,5 @@ app.use((err, req, res, next) => {
   });
 });
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port http://localhost:${port}`);
 });

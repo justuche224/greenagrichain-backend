@@ -45,6 +45,8 @@ model User {
   identification String?
   gender         String?
   role           UserRole  @default(USER)
+  otp            String? // Store OTP
+  otpExpires     DateTime? // OTP expiration time
 
   deposits       Deposit[]
   kyc            kyc?
