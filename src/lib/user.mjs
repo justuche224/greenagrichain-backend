@@ -19,7 +19,7 @@ export const getUserById = async (id) => {
 export async function updateUserOTP(email, otp, otpExpires) {
   try {
     // Update the user's OTP and otpExpires fields
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await db.user.update({
       where: { email },
       data: {
         otp: otp,
