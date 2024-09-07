@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Documentation - Inter-User Transfer</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+      }
+      h1,
+      h2,
+      h3 {
+        color: #333;
+      }
+      pre {
+        background-color: #f4f4f4;
+        padding: 10px;
+        border: 1px solid #ddd;
+        overflow-x: auto;
+      }
+      .code {
+        color: #d63384;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>API Documentation: Inter-User Transfer Route</h1>
+
+    <p>
+      This API route allows users to transfer funds between each other. The
+      route checks for a valid sender, receiver, password, and sufficient
+      balance before processing the transfer. The transfer is logged in the
+      <code>Transaction</code> table for both the sender and the receiver.
+    </p>
+
+    <h2>Endpoint</h2>
+    <p><code>POST /api/transfer</code></p>
+
+    <h2>Request Payload</h2>
+    <p>
+      The request body should be sent in JSON format, containing the following
+      fields:
+    </p>
+    <pre><code class="code">{
+  "senderEmail": "string",      // Required: The email of the sender
+  "password": "string",         // Required: The password of the sender for authentication
+  "receiverEmail": "string",    // Required: The email of the receiver
+  "amount": "number"            // Required: The amount to transfer
+}</code></pre>
+
+    <h3>Example Request</h3>
+    <pre><code class="code">POST /api/transfer
+Content-Type: application/json
+
+{
+  "senderEmail": "john.doe@example.com",
+  "password": "yourpassword",
+  "receiverEmail": "jane.smith@example.com",
+  "amount": 100.00
+}</code></pre>
+
+    <h2>Possible Responses</h2>
+
+    <h3>Success Response</h3>
+    <p>
+      If the transfer is successful, the server will respond with a 200 status
+      code and a success message:
+    </p>
+    <pre><code class="code">Status: 200 OK
+{
+  "message": "Transfer successful"
+}</code></pre>
+
+    <h3>Error Responses</h3>
+    <p>The following are possible error responses you may encounter:</p>
+
+    <h4>1. Transfer Amount Must Be Greater than Zero</h4>
+    <p>
+      This error occurs if the transfer amount is less than or equal to zero.
+    </p>
+    <pre><code class="code">Status: 400 Bad Request
+{
+  "message": "Transfer amount must be greater than zero"
+}</code></pre>
+
+    <h4>2. Sender and Receiver Are the Same</h4>
+    <p>This error occurs if the sender and receiver emails are the same.</p>
+    <pre><code class="code">Status: 400 Bad Request
+{
+  "message": "Sender and receiver cannot be the same"
+}</code></pre>
+
+    <h4>3. Sender Not Found</h4>
+    <p>This error occurs if the sender's email does not exist in the system.</p>
+    <pre><code class="code">Status: 400 Bad Request
+{
+  "message": "Sender not found"
+}</code></pre>
+
+    <h4>4. Receiver Not Found</h4>
+    <p>
+      This error occurs if the receiver's email does not exist in the system.
+    </p>
+    <pre><code class="code">Status: 400 Bad Request
+{
+  "message": "Receiver not found"
+}</code></pre>
+
+    <h4>5. Invalid Password</h4>
+    <p>This error occurs if the sender's password is incorrect.</p>
+    <pre><code class="code">Status: 400 Bad Request
+{
+  "message": "Invalid password"
+}</code></pre>
+
+    <h4>6. Sender's Account Balance Not Initialized</h4>
+    <p>
+      This error occurs if the sender's account balance has not been initialized
+      yet.
+    </p>
+    <pre><code class="code">Status: 400 Bad Request
+{
+  "message": "Sender's account balance is not initialized"
+}</code></pre>
+
+    <h4>7. Insufficient Balance</h4>
+    <p>
+      This error occurs if the sender does not have enough balance to complete
+      the transfer.
+    </p>
+    <pre><code class="code">Status: 400 Bad Request
+{
+  "message": "Insufficient balance"
+}</code></pre>
+
+    <h4>8. Unexpected Error</h4>
+    <p>
+      If any unexpected server error occurs, the following response will be
+      returned:
+    </p>
+    <pre><code class="code">Status: 500 Internal Server Error
+{
+  "message": "An unexpected error occurred"
+}</code></pre>
+
+    <h2>Edge Cases Handled</h2>
+    <ul>
+      <li>
+        <strong>Negative or Zero Transfer Amount:</strong> The transfer amount
+        must be greater than zero.
+      </li>
+      <li>
+        <strong>Sender and Receiver are the Same:</strong> The sender and
+        receiver cannot be the same person.
+      </li>
+      <li>
+        <strong>Precision and Rounding Issues:</strong> The amounts and balances
+        are rounded to two decimal places to avoid precision errors.
+      </li>
+      <li>
+        <strong>Account Balance Initialization:</strong> If the receiver's
+        account balance does not exist, it will be initialized automatically
+        during the first transfer.
+      </li>
+      <li>
+        <strong>Insufficient Balance:</strong> The system checks that the sender
+        has enough balance before proceeding with the transaction.
+      </li>
+      <li>
+        <strong>TODO - Maximum Transfer Limit:</strong> A maximum transfer limit
+        will be implemented in future versions.
+      </li>
+    </ul>
+
+    <h2>Transaction Logging</h2>
+    <p>
+      For every transfer, two records are created in the
+      <code>Transaction</code> table:
+    </p>
+    <ul>
+      <li>
+        A transaction entry for the sender, with a negative amount to reflect
+        the deduction.
+      </li>
+      <li>
+        A transaction entry for the receiver, with a positive amount to reflect
+        the credit.
+      </li>
+    </ul>
+  </body>
+</html>
