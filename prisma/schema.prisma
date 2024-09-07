@@ -28,6 +28,7 @@ enum TransactionType {
   deposit
   withdrawal
   purchase
+  transfer
 }
 
 model User {
@@ -105,12 +106,14 @@ model AccountBalance {
 }
 
 model Transaction {
-  id        String          @id @default(auto()) @map("_id") @db.ObjectId
-  balanceId String          @db.ObjectId
-  type      TransactionType
-  amount    Float
-  createdAt DateTime        @default(now())
-  balance   AccountBalance  @relation(fields: [balanceId], references: [id])
+  id         String          @id @default(auto()) @map("_id") @db.ObjectId
+  balanceId  String          @db.ObjectId
+  type       TransactionType
+  amount     Float
+  createdAt  DateTime        @default(now())
+  balance    AccountBalance  @relation(fields: [balanceId], references: [id])
+  senderId   String?         @db.ObjectId
+  receiverId String?         @db.ObjectId
 }
 
 model Wallet {

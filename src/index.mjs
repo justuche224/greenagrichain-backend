@@ -17,6 +17,7 @@ import usersRouter from "./routes/users.mjs";
 import accountBalanceRouter from "./routes/accountBalance.mjs";
 import docsRouter from "./routes/docs.mjs";
 import otpRouter from "./routes/verifyOtp.mjs";
+import transferRouter from "./routes/transfer.mjs";
 
 dotenv.config();
 const app = express();
@@ -60,6 +61,8 @@ app.use(usersRouter);
 app.use(accountBalanceRouter);
 
 app.use(otpRouter);
+
+app.use(transferRouter);
 
 app.use("/api/docs", docsRouter);
 
