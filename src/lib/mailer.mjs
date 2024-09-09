@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
+
 export const sendVerificationEmail = async (email, token, firstname) => {
   const verifyUrl = `${process.env.CLIENT_URL}/api/auth/verify-email?token=${token}`;
-  //   console.log(verifyUrl);
 
   // Create a transporter using SMTP transport
   const transporter = nodemailer.createTransport({
@@ -170,10 +170,6 @@ export const sendPasswordResetEmail = async (email, token) => {
 };
 
 export const sendOTPEmail = async (email, otp, firstname) => {
-  // console.log("about to send otp to:" + email);
-  // console.log("otp:" + otp);
-  // console.log("firstname:" + firstname);
-
   // Create a transporter using SMTP transport
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -399,6 +395,102 @@ export const sendOTPEmail = async (email, otp, firstname) => {
 </html>
 
 
+        `,
+  };
+  await transporter.sendMail(mailOptions);
+};
+
+export const sendWelcomeEmail = async (email, firstname) => {
+  // Create a transporter using SMTP transport
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.NODEMAILER_EMAIL,
+      pass: process.env.NODEMAILER_APP_PASS,
+    },
+  });
+  // Email data
+  const mailOptions = {
+    from: process.env.NODEMAILER_EMAIL,
+    to: email,
+    subject: `Welcome to Greenagrichain ${firstname}`,
+    text: `Welcome to Greenagrichain ${firstname}`,
+    html: `
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Welcome ${firstname} to Greenagrichain</title>
+        </head>
+        <body style="background-color: #f5f5f5">
+          <h1 style="text-align: center">
+            Hello ${firstname}, Welcome to Greenagrichain!
+          </h1>
+
+          <div
+            style="
+              width: 100%;
+              text-align: center;
+              display: flex;
+              justify-content: center;
+            "
+          >
+            <img
+              src="https://i.postimg.cc/V6y2379Z/IMG-20240907-WA0055.jpg"
+              width="300px"
+              height="300px"
+              alt="Greenagrichain logo"
+            />
+          </div>
+          <div style="padding: 10px">
+            <p>
+              We're thrilled to have you on board our community. Whether you're here
+              to make good for the future or simply to explore, we're here to support
+              you every step of the way.
+            </p>
+            <div>
+              <h3>Here's what you can do next:</h3>
+              <ul>
+                <li>
+                  Complete your profile:
+                  <a href="https://greenagrichain.com/dashboard">Dashboard</a>
+                </li>
+                <li>
+                  Explore our features:
+                  <a href="https://greenagrichain.com/services">Offers</a>
+                </li>
+                <li>
+                  Complete your profile:
+                  <a href="https://greenagrichain.com/contact">Get in touch</a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3>Useful Links:</h3>
+              <ul>
+                <li>
+                  <a href="https://greenagrichain.com/faqs">FAQs</a>
+                </li>
+                <li>
+                  <a href="https://greenagrichain.com/store">Products</a>
+                </li>
+              </ul>
+            </div>
+            <p>
+              If you have any questions or need support, don't hesitate to reach out
+              to our teach at
+              <a href="mailto:greenagrichain.com@gmail.com"
+                >greenagrichain.com@gmail.com</a
+              >
+              or visit our
+              <a href="https://greenagrichain.com/contact">contact page</a>.
+            </p>
+            <p>Thank you for choosing Greenagrichain.</p>
+            <p>Best regards, The Greenagrichain Team</p>
+          </div>
+        </body>
+      </html>
         `,
   };
   await transporter.sendMail(mailOptions);

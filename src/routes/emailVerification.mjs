@@ -2,6 +2,7 @@ import { Router } from "express";
 import { getVerificationTokenByToken } from "../lib/verificationToken.mjs";
 import { getUserByEmail } from "../lib/user.mjs";
 import { db } from "../lib/db.mjs";
+import { sendWelcomeEmail } from "../lib/mailer.mjs";
 const router = Router();
 
 router.get("/api/auth/verify-email", async (req, res) => {
@@ -31,6 +32,8 @@ router.get("/api/auth/verify-email", async (req, res) => {
     await db.verificationToken.delete({
       where: { id: existingToken.id },
     });
+
+    await sendWelcomeEmail(existingUser.email, existingUser.firstname);
 
     res.status(200).send(`
             <!DOCTYPE html>
