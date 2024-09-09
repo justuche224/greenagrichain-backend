@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>API Documentation</title>
     <style>
       html {
         color-scheme: light dark;
@@ -49,6 +49,7 @@
         </ul>
       </li>
     </ul>
+
     <h3 id="-2-get-a-user-by-id-"><strong>2. Get a User by ID</strong></h3>
     <p>
       <strong>Endpoint:</strong> <code>/api/users/:id</code
@@ -120,6 +121,92 @@
             <strong>Body:</strong>
             <code>{ message: &quot;User not found&quot; }</code> (if the user
             with the given <code>id</code> does not exist)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>500 Internal Server Error:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Internal server error&quot; }</code>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3 id="-3-get-a-user-by-email-">
+      <strong>3. Get a User by Email</strong>
+    </h3>
+    <p>
+      <strong>Endpoint:</strong> <code>/api/users/email/:email</code
+      ><strong>Method:</strong> GET <strong>Path Parameters:</strong>
+    </p>
+    <ul>
+      <li>
+        <code>email</code> (string): The email address of the user to
+        retrieve.<strong>Response:</strong>
+      </li>
+      <li>
+        <strong>200 OK:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong> A user object containing detailed
+            information, including:
+            <ul>
+              <li><code>id</code> (number): The unique ID of the user.</li>
+              <li>
+                <code>email</code> (string): The user&#39;s email address.
+              </li>
+              <li>
+                <code>firstname</code> (string): The user&#39;s first name.
+              </li>
+              <li><code>lastname</code> (string): The user&#39;s last name.</li>
+              <li>
+                <code>number</code> (string): The user&#39;s phone number.
+              </li>
+              <li>
+                <code>role</code> (string): The user&#39;s role (e.g.,
+                &quot;ADMIN&quot;, &quot;USER&quot;).
+              </li>
+              <li>
+                <code>emailVerified</code> (boolean): Indicates if the
+                user&#39;s email is verified.
+              </li>
+              <li>
+                <code>kycVerified</code> (boolean): Indicates if the user&#39;s
+                KYC is verified.
+              </li>
+              <li>
+                <code>image</code> (string): The URL or path to the user&#39;s
+                profile image.
+              </li>
+              <li><code>address</code> (string): The user&#39;s address.</li>
+              <li>
+                <code>nationality</code> (string): The user&#39;s nationality.
+              </li>
+              <li><code>gender</code> (string): The user&#39;s gender.</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>400 Bad Request:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;Email is required&quot; }</code> (if
+            <code>email</code> is missing in the request)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>404 Not Found:</strong>
+        <ul>
+          <li>
+            <strong>Body:</strong>
+            <code>{ message: &quot;User not found&quot; }</code> (if the user
+            with the given <code>email</code> does not exist)
           </li>
         </ul>
       </li>
