@@ -492,6 +492,28 @@ export const sendWelcomeEmail = async (email, firstname) => {
         </body>
       </html>
         `,
+    attachments: [
+      {
+        filename: "Articles of Incorporation.pdf",
+        path: "https://greenagrichain.com/docs/Articles%20of%20incorporation-Form%281%29%20_240909_162313.pdf",
+      },
+      {
+        filename: "Certification of Incorporation.pdf",
+        path: "https://greenagrichain.com/docs/Certification%20of%20incorporation%20GAC%20_240909_163151.pdf",
+      },
+      {
+        filename: "Corporation Information Sheet.pdf",
+        path: "https://greenagrichain.com/docs/Corporation%20information%20sheet%20_240909_163018.pdf",
+      },
+      {
+        filename: "Extra Provincial Registration.pdf",
+        path: "https://greenagrichain.com/docs/Extra%20Provincial%20Registration%20_240909_162842.pdf",
+      },
+      {
+        filename: "Liability Insurance.pdf",
+        path: "https://greenagrichain.com/docs/Liability%20Insurance%20_240909_163114.pdf",
+      },
+    ],
   };
   await transporter.sendMail(mailOptions);
 };
