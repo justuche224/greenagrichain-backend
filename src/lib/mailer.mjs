@@ -5,7 +5,9 @@ export const sendVerificationEmail = async (email, token, firstname) => {
 
   // Create a transporter using SMTP transport
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "mail.privateemail.com",
+    port: 465, // use 587 for TLS if SSL is not working
+    secure: true, // true for SSL, false for TLS
     auth: {
       user: process.env.NODEMAILER_EMAIL,
       pass: process.env.NODEMAILER_APP_PASS,
@@ -104,7 +106,9 @@ export const sendPasswordResetEmail = async (email, token) => {
   const resetUrl = `https://greenagrichain.com/reset-password?token=${token}`;
   // Create a transporter using SMTP transport
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "mail.privateemail.com",
+    port: 465, // use 587 for TLS if SSL is not working
+    secure: true, // true for SSL, false for TLS
     auth: {
       user: process.env.NODEMAILER_EMAIL,
       pass: process.env.NODEMAILER_APP_PASS,
@@ -172,7 +176,9 @@ export const sendPasswordResetEmail = async (email, token) => {
 export const sendOTPEmail = async (email, otp, firstname) => {
   // Create a transporter using SMTP transport
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "mail.privateemail.com",
+    port: 465, // use 587 for TLS if SSL is not working
+    secure: true, // true for SSL, false for TLS
     auth: {
       user: process.env.NODEMAILER_EMAIL,
       pass: process.env.NODEMAILER_APP_PASS,
@@ -403,7 +409,9 @@ export const sendOTPEmail = async (email, otp, firstname) => {
 export const sendWelcomeEmail = async (email, firstname) => {
   // Create a transporter using SMTP transport
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "mail.privateemail.com",
+    port: 465, // use 587 for TLS if SSL is not working
+    secure: true, // true for SSL, false for TLS
     auth: {
       user: process.env.NODEMAILER_EMAIL,
       pass: process.env.NODEMAILER_APP_PASS,
